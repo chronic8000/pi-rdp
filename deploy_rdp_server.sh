@@ -113,8 +113,8 @@ sudo bash -c "cat > /etc/pipewire/pipewire.conf.d/20-xrdp-audio.conf <<EOF
 context.properties = {
     default.clock.rate          = 48000
     default.clock.allowed-rates = [ 48000 ]
-    default.clock.min-quantum   = 1024
-    default.clock.max-quantum   = 1024
+    default.clock.min-quantum   = 512
+    default.clock.max-quantum   = 512
 }
 EOF"
 
@@ -187,13 +187,17 @@ if ! pactl list modules | grep -q xrdp; then
 fi
 # Force the default sink to RDP (xrdp-sink)
 pactl set-default-sink xrdp-sink || true
+# Force 'performance' governor to eliminate CPU scaling stutter
+echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor || true
 # Force Real-Time priority for the current RDP-PipeWire session
-renice -n -10 -p \$(pgrep -u \$USER pipewire) || true
+renice -n -15 -p \$(pgrep -u \$USER pipewire) || true
 EOF"
 sudo chmod +x /usr/local/bin/gentle-pw-start.sh
 
 # 6. Advanced Performance & Network Turbo
 echo -e "${BLUE}[6/6] Finalizing Services & Network Turbo...${NC}"
+# Set performance governor immediately
+echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor || true
 # xrdp settings
 sudo sed -i 's/max_bpp=32/max_bpp=24/g' /etc/xrdp/xrdp.ini
 sudo sed -i 's/use_fastpath=both/use_fastpath=both/g' /etc/xrdp/xrdp.ini
