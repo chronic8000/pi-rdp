@@ -1,63 +1,53 @@
-# Raspberry Pi Raspian Homeless Tech Remote Desktop Suite v1.0
+# RPi 5 RDP Wrapper - The "VNC Killer" (v1.5)
 
-Building for the "VNC-Killer" experience, this suite provides an ultimate RDP environment for your Raspberry Pi 5.
+Tired of lagging, no-audio VNC on your Pi 5? This is a one-script solution for a high-performance RDP suite that fixes audio, network bottlenecks, and Wayland compatibility.
 
-Support: [YouTube @HomelessTechnology](https://www.youtube.com/@HomelessTechnology)
+Support: [Homeless Technology on YouTube](https://www.youtube.com/@HomelessTechnology)
 
 ---
 
-## 🚀 Features (Why it's better than VNC)
+## ⚡ Why This Is Better Than VNC
+- **Crystal Clear Audio**: Two-way audio support (Mic + Speakers) powered by PipeWire.
+- **Bi-directional Clipboard**: Copy-paste text and images between Pi and laptop like it's local.
+- **Native Drive Mapping**: Windows drives appear on your Pi for easy file transfers.
+- **Network Turbo**: Optimized 4MB TCP buffers for smooth 1080p/60fps playback.
+- **Zero-Conf Networking**: Connect via `raspberrypi.local` or your custom hostname.
+- **Hardware Future-Proof**: Optimized for Labwc and Wayfire on RPi 5.
 
-- **Native Two-Way Audio**: Hear Pi audio & use your laptop Mic on the Pi via PipeWire.
-- **Bi-directional Clipboard**: Seamless copy-paste of text and images.
-- **Drive Redirection**: Your local drives (C:, etc.) appear as folders on the Pi via FUSE.
-- **Printer & Serial Redirection**: Print from the Pi to your local home printer.
-- **Network Turbo**: Optimized TCP buffers for zero-lag 1080p/60fps streaming.
-- **Future-Proof**: Supports both Labwc and Wayfire compositors.
+## 🛠️ Installation (On your Pi)
 
-## 🛠️ Installation
-
-1. **On your Raspberry Pi 5**, run the following command:
-   ```bash
-   wget https://raw.githubusercontent.com/chronic8000/pi-rdp/main/deploy_rdp_server.sh
-   chmod +x deploy_rdp_server.sh
-   ./deploy_rdp_server.sh
-   ```
-2. **Accept the Disclaimer**: Read through the liability terms and press `y` to accept.
-3. **Reboot**: A reboot is required to apply auto-login and network turbo tweaks.
-
-## 🖥️ Usage
-
-### From Windows (Native Client)
-1. Ensure your Pi is on the same network.
-2. Open "Remote Desktop Connection" (mstsc).
-3. Connect to `raspberrypi.local` (or your Pi's hostname).
-
-### Using the Homeless Tech Launcher (Recommended)
-We provide an optimized Python launcher that handles latency checks and secure SSH tunneling.
+Run this on your Raspberry Pi 5 terminal to start the install:
 
 ```bash
-python rdp_launcher.py [YOUR_PI_HOSTNAME].local --tunnel --user pi
+wget https://raw.githubusercontent.com/chronic8000/pi-rdp/main/deploy_rdp_server.sh
+chmod +x deploy_rdp_server.sh
+./deploy_rdp_server.sh
+```
+*Note: A reboot is required after the script finished to apply the auto-login and network tweaks.*
+
+## 🖥️ Usage (From your Computer)
+
+While you can use standard `mstsc` (Remote Desktop Connection), we've included a **robust Python launcher** that handles SSH tunneling and latency checks automatically.
+
+```bash
+python rdp_launcher.py user@hostname.local --tunnel
 ```
 
-## 🔊 Troubleshooting Audio
+## 🔊 Getting Sound Working
+If you don't hear audio immediately:
+1. **Wait 5 seconds**: The bridge takes a moment to initialize after the desktop loads.
+2. **Select Sink**: Right-click the volume icon on the Pi taskbar and pick **xrdp-sink**.
+3. **Optimized playback**: We've tweaked PipeWire quantum settings for the smoothest playback possible over RDP.
 
-If you don't hear sound after connecting:
-1.  **Wait 5 seconds**: The audio bridge initializes a few seconds after the desktop appears.
-2.  **Check the Sink**: On the Pi's taskbar, right-click the Volume icon and ensure **xrdp-sink** is selected as the output device.
-3.  **Check Client Settings**: If using `mstsc` manually, ensure "Remote Audio" is set to "Play on this computer".
-4.  **Restart Bridge**: If all else fails, run `gentle-pw-start.sh` in a terminal on the Pi.
-
-## 🗑️ Uninstallation
-
-To revert the changes made by this suite:
+## 🗑️ Reverting / Uninstallation
+Need to nuke the settings and go back to stock?
 ```bash
 chmod +x uninstall_rdp_server.sh
 ./uninstall_rdp_server.sh
 ```
 
 ## 📜 Disclaimer
-This script is provided "AS-IS" without warranty. Homeless Technology does not manufacture the underlying tools (xrdp, PipeWire, etc.). Use at your own risk. For support on specific tools, please contact their respective authors.
+This comes from **Homeless Technology** "as-is". We don't maintain the underlying open-source tools (xrdp, PipeWire, etc.), but we've brought them together to make them work properly on the RPi 5. Use it at your own risk.
 
 ---
-Visit [Homeless Technology on YouTube](https://www.youtube.com/@HomelessTechnology) for more Raspberry Pi 5 and tech guides!
+Follow the journey: [YouTube @HomelessTechnology](https://www.youtube.com/@HomelessTechnology)

@@ -175,6 +175,8 @@ if ! pactl list modules | grep -q xrdp; then
 fi
 # Force the default sink to RDP (xrdp-sink)
 pactl set-default-sink xrdp-sink || true
+# Optimization: Set PipeWire quantum for stability (fixes scratchy/skimming audio)
+pw-metadata -n settings 0 clock.force-quantum 1024 || true
 EOF"
 sudo chmod +x /usr/local/bin/gentle-pw-start.sh
 
