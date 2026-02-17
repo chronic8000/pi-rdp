@@ -68,7 +68,7 @@ echo -e "${GREEN}Terms accepted. Starting deployment...${NC}"
 
 # --- Configuration ---
 BUILD_DIR="/tmp/rdp_build"
-XRDP_PW_REPO="https://github.com/r1sh/pipewire-module-xrdp.git"
+XRDP_PW_REPO="https://github.com/neutrinolabs/pipewire-module-xrdp.git"
 VIRTUAL_RES="1920x1080"
 
 echo -e "${BLUE}Starting RDP Wrapper Deployment v1.5 for Raspberry Pi 5...${NC}"
