@@ -80,7 +80,8 @@ sudo apt install -y \
     xrdp xorgxrdp \
     pipewire pipewire-audio-client-libraries \
     libpipewire-0.3-dev libspa-0.2-dev \
-    build-essential git cmake pkg-config \
+    build-essential git pkg-config \
+    autoconf automake libtool \
     wl-clipboard \
     avahi-daemon fuse3 \
     dbus-user-session \
@@ -106,7 +107,9 @@ cd "$BUILD_DIR"
 rm -rf pipewire-module-xrdp
 git clone "$XRDP_PW_REPO"
 cd pipewire-module-xrdp
-cmake .
+# Use Autotools (official NeutrinoLabs build system)
+./bootstrap
+./configure
 make -j$(nproc)
 sudo make install
 
