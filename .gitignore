@@ -1,0 +1,8 @@
+# Git Ignore
+*.rdp
+*.tmp
+__pycache__/
+*.pyc
+*.deb
+rdp_build/
+.DS_Store
