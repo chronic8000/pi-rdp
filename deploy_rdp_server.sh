@@ -73,6 +73,11 @@ VIRTUAL_RES="1920x1080"
 
 echo -e "${BLUE}Starting RDP Wrapper Deployment v1.5 for Raspberry Pi 5...${NC}"
 
+# 0. Pre-Installation Cleanup (Idempotency)
+echo -e "${BLUE}[0/6] Cleaning up previous build artifacts...${NC}"
+rm -rf "$BUILD_DIR"
+mkdir -p "$BUILD_DIR"
+
 # 1. Initial System Setup & Session Conflict Prevention
 echo -e "${BLUE}[1/6] Installing dependencies and disabling auto-login...${NC}"
 sudo apt update
@@ -102,12 +107,9 @@ mkdir -p ~/.config/pipewire
 
 # 3. Compiling pipewire-module-xrdp (tmpfs)
 echo -e "${BLUE}[3/6] Building pipewire-module-xrdp...${NC}"
-mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
-rm -rf pipewire-module-xrdp
 git clone "$XRDP_PW_REPO"
 cd pipewire-module-xrdp
-# Use Autotools (official NeutrinoLabs build system)
 ./bootstrap
 ./configure
 make -j$(nproc)
@@ -124,7 +126,9 @@ EOF
 
 # Wayfire configuration
 WAYFIRE_CONFIG="/etc/wayfire/wayfire.ini"
-if [ -f "$WAYFIRE_CONFIG" ] && ! grep -q "VNC-1" "$WAYFIRE_CONFIG"; then
+if [ -f "$WAYFIRE_CONFIG" ]; then
+    # Clean up old VNC-1 entry if exists (idempotency)
+    sudo sed -i '/\[output:VNC-1\]/,+2d' "$WAYFIRE_CONFIG" || true
     sudo bash -c "cat >> $WAYFIRE_CONFIG <<EOF
 
 [output:VNC-1]
@@ -163,8 +167,9 @@ echo -e "${BLUE}[6/6] Finalizing Services & Network Turbo...${NC}"
 # xrdp settings
 sudo sed -i 's/max_bpp=32/max_bpp=24/g' /etc/xrdp/xrdp.ini
 sudo sed -i 's/use_fastpath=both/use_fastpath=both/g' /etc/xrdp/xrdp.ini
-sudo sed -i 's/#tcp_send_buffer_bytes=32768/tcp_send_buffer_bytes=4194304/g' /etc/xrdp/xrdp.ini
-# Disable desktop composition for efficiency
+sudo sed -i 's/^#tcp_send_buffer_bytes=32768/tcp_send_buffer_bytes=4194304/g' /etc/xrdp/xrdp.ini
+# Clean up duplicate composition flags if they exist
+sudo sed -i '/allow_desktop_composition=false/d' /etc/xrdp/xrdp.ini
 sudo sed -i 's/allow_multimon=true/allow_multimon=true\nallow_desktop_composition=false/g' /etc/xrdp/xrdp.ini
 
 # System network tweak
