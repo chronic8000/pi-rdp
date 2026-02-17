@@ -165,8 +165,13 @@ sudo bash -c "cat > /usr/local/bin/gentle-pw-start.sh <<EOF
 sleep 3
 # Ensure PipeWire services are running
 systemctl --user start pipewire pipewire-pulse || true
-# Explicitly load the xrdp pipewire module
-/usr/local/libexec/pipewire-module-xrdp/load_pw_modules.sh
+# Explicitly load the xrdp pipewire module using official script
+/usr/local/libexec/pipewire-module-xrdp/load_pw_modules.sh || true
+# Fallback: Manual load if sink is still missing
+if ! pactl list modules | grep -q xrdp; then
+    # Try common module name
+    pactl load-module libpipewire-module-xrdp || true
+fi
 EOF"
 sudo chmod +x /usr/local/bin/gentle-pw-start.sh
 
