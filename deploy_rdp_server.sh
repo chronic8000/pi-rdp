@@ -88,6 +88,7 @@ sudo apt install -y \
     build-essential git pkg-config \
     autoconf automake libtool \
     wl-clipboard \
+    pavucontrol \
     avahi-daemon fuse3 \
     dbus-user-session \
     cups smbclient
@@ -172,6 +173,8 @@ if ! pactl list modules | grep -q xrdp; then
     # Try common module name
     pactl load-module libpipewire-module-xrdp || true
 fi
+# Force the default sink to RDP (xrdp-sink)
+pactl set-default-sink xrdp-sink || true
 EOF"
 sudo chmod +x /usr/local/bin/gentle-pw-start.sh
 
