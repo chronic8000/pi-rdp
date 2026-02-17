@@ -106,6 +106,18 @@ systemctl --user enable pipewire pipewire-pulse || true
 systemctl --user start pipewire pipewire-pulse || true
 mkdir -p ~/.config/pipewire
 
+# --- Ultimate Audio Stability (v1.5) ---
+# Lock clock rate and quantum system-wide to prevent drift/scratchiness
+sudo mkdir -p /etc/pipewire/pipewire.conf.d
+sudo bash -c "cat > /etc/pipewire/pipewire.conf.d/20-xrdp-audio.conf <<EOF
+context.properties = {
+    default.clock.rate          = 48000
+    default.clock.allowed-rates = [ 48000 ]
+    default.clock.min-quantum   = 1024
+    default.clock.max-quantum   = 1024
+}
+EOF"
+
 # 3. Compiling pipewire-module-xrdp (tmpfs)
 echo -e "${BLUE}[3/6] Building pipewire-module-xrdp...${NC}"
 cd "$BUILD_DIR"
@@ -175,8 +187,8 @@ if ! pactl list modules | grep -q xrdp; then
 fi
 # Force the default sink to RDP (xrdp-sink)
 pactl set-default-sink xrdp-sink || true
-# Optimization: Set PipeWire quantum for stability (fixes scratchy/skimming audio)
-pw-metadata -n settings 0 clock.force-quantum 1024 || true
+# Force Real-Time priority for the current RDP-PipeWire session
+renice -n -10 -p \$(pgrep -u \$USER pipewire) || true
 EOF"
 sudo chmod +x /usr/local/bin/gentle-pw-start.sh
 
