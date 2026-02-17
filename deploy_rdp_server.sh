@@ -168,6 +168,26 @@ echo -e "${BLUE}[6/6] Finalizing Services & Network Turbo...${NC}"
 sudo sed -i 's/max_bpp=32/max_bpp=24/g' /etc/xrdp/xrdp.ini
 sudo sed -i 's/use_fastpath=both/use_fastpath=both/g' /etc/xrdp/xrdp.ini
 sudo sed -i 's/^#tcp_send_buffer_bytes=32768/tcp_send_buffer_bytes=4194304/g' /etc/xrdp/xrdp.ini
+
+# Clean up redundant session types (Xvnc, vnc-any, etc.) to force Xorg
+# We keep [Xorg] and remove everything from [Xvnc] onwards
+sudo sed -i '/^\[Xvnc\]/,$d' /etc/xrdp/xrdp.ini
+
+# Re-add common [Xorg] entry just in case it was missing or messily handled
+if ! grep -q "\[Xorg\]" /etc/xrdp/xrdp.ini; then
+    sudo bash -c "cat >> /etc/xrdp/xrdp.ini <<EOF
+
+[Xorg]
+name=Xorg
+lib=libxorgxrdp.so
+username=ask
+password=ask
+ip=127.0.0.1
+port=-1
+code=20
+EOF"
+fi
+
 # Clean up duplicate composition flags if they exist
 sudo sed -i '/allow_desktop_composition=false/d' /etc/xrdp/xrdp.ini
 sudo sed -i 's/allow_multimon=true/allow_multimon=true\nallow_desktop_composition=false/g' /etc/xrdp/xrdp.ini
