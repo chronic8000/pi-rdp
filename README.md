@@ -40,6 +40,14 @@ We provide an optimized Python launcher that handles latency checks and secure S
 python rdp_launcher.py [YOUR_PI_HOSTNAME].local --tunnel --user pi
 ```
 
+## 🔊 Troubleshooting Audio
+
+If you don't hear sound after connecting:
+1.  **Wait 5 seconds**: The audio bridge initializes a few seconds after the desktop appears.
+2.  **Check the Sink**: On the Pi's taskbar, right-click the Volume icon and ensure **xrdp-sink** is selected as the output device.
+3.  **Check Client Settings**: If using `mstsc` manually, ensure "Remote Audio" is set to "Play on this computer".
+4.  **Restart Bridge**: If all else fails, run `gentle-pw-start.sh` in a terminal on the Pi.
+
 ## 🗑️ Uninstallation
 
 To revert the changes made by this suite:

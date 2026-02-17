@@ -148,17 +148,25 @@ ResultAny=yes
 EOF"
 
 mkdir -p ~/.config/autostart
+# We remove the official one if it exists to avoid double-loading or conflicts
+# then create our own that ensures pipewire is ready first.
+rm -f ~/.config/autostart/pipewire-xrdp.desktop
+
 cat > ~/.config/autostart/pipewire-bridge.desktop <<EOF
 [Desktop Entry]
 Type=Application
 Name=PipeWire RDP Bridge
-Exec=gentle-pw-start.sh
+Exec=/usr/local/bin/gentle-pw-start.sh
 EOF
 
 sudo bash -c "cat > /usr/local/bin/gentle-pw-start.sh <<EOF
 #!/bin/bash
-sleep 2
-systemctl --user restart pipewire pipewire-pulse
+# Wait for session to stabilize
+sleep 3
+# Ensure PipeWire services are running
+systemctl --user start pipewire pipewire-pulse || true
+# Explicitly load the xrdp pipewire module
+/usr/local/libexec/pipewire-module-xrdp/load_pw_modules.sh
 EOF"
 sudo chmod +x /usr/local/bin/gentle-pw-start.sh
 
